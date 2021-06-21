@@ -6,7 +6,6 @@ from tkinter import messagebox
 from datetime import datetime, timedelta
 import re
 import rsaidnumber
-import random
 
 root = Tk()
 root.geometry('400x450')
@@ -46,13 +45,14 @@ class Login:
 
         for i in range(len(self.email_ent.get())):
             if re.search(expr, self.email_ent.get()):
-                with open("details.txt", "w+") as f:
-                    f.write(self.user_ent.get())
-                    f.write('\n')
-                    f.write(self.email_ent.get())
-                    f.write('\n')
-                    f.write(self.id_ent.get())
-                    f.write('\n')
+
+                details = {'Name': self.user_ent.get(),
+                           'Email': self.email_ent.get(),
+                           'ID': self.id_ent.get()}
+
+                with open("details.txt", 'w+') as f:
+                    for key, value in details.items():
+                        f.write('%s:%s\n' % (key, value))
 
             else:
                 messagebox.showerror("Error", "Invalid Email")
@@ -68,6 +68,7 @@ class Login:
             if age >= 18:
                 messagebox.showinfo('Status', 'Let\'s Play!')
                 root.destroy()
+                import lotto_gen
 
             elif len(self.id_ent.get()) != 13:
                 messagebox.showerror("Error", "Not a valid ID number")
@@ -84,6 +85,5 @@ class Login:
 
 log_win = Login(root)
 root.mainloop()
-
 
 # show='\u2022'

@@ -14,6 +14,10 @@ img = Label(root, image=looter)
 img.place(x=0, y=0)
 img.config(bg='#fdcb08')
 
+win = 0
+win1 = 0
+win2 =0
+
 
 class Loot:
     results = StringVar()
@@ -27,7 +31,7 @@ class Loot:
     list3 = []
 
     def __init__(self, master):
-        # labels and displays ( also labels ;) )
+        # labels and displays ( which are also labels ;) )
         self.num_lab = Label(master, bg='#fdcb08', text='Lucky Numbers:').place(x=50, y=530)
         self.num_res = Label(master, bg='#fdcb08', text='', textvariable=self.results).place(x=200, y=530)
         self.num_lab = Label(master, bg='#fdcb08', text='Set 1:').place(x=50, y=380)
@@ -92,6 +96,7 @@ class Loot:
         self.clr_btn = Button(master, bg='white', text='Clear', command=self.clear).place(x=270, y=580)
         self.exit = Button(master, bg='white', text='Exit', command=self.kill).place(x=130, y=580)
         self.prize = Button(master, bg='white', text='PLAY!', command=self.lotto_res).place(x=200, y=480)
+        self.claim_prize = Button(master, bg='white', text='Claim prize', command=self.claim, state=DISABLED).place(x=300, y=530)
 
     def lottery(self, num):
         if len(self.list1) < 6 and num not in self.list1:
@@ -108,6 +113,8 @@ class Loot:
 
     def lotto_res(self):
         global win
+        global win1
+        global win2
         y = 0
         lotto_nums = random.sample(range(1, 50), 6)
         self.results.set(lotto_nums)
@@ -126,47 +133,87 @@ class Loot:
             win = 20
         elif y < 2:
             win = 0
-        messagebox.showinfo("Status set 1", "Set had: " + str(y))
-        messagebox.showinfo("Lotto set 1", "Numbers are: " + str(lotto_nums))
-        messagebox.showinfo("Winnings set 1", "You have won R" + str(win))
+        messagebox.showinfo('Status set 1', 'Set had: ' + str(y) + ' correct')
+        messagebox.showinfo('Winnings set 1', 'You have won R' + str(win))
+
+        youwon = {'Numbers correct': str(y),
+                  'Amount won': str(win)}
+
+        with open("details.txt", 'a') as f:
+            for key, value in youwon.items():
+                f.write('%s:%s\n' % (key, value))
 
         for x in range(0, 6):
             if self.list2[x] == lotto_nums[x]:
                 y += 1
         if y == 6:
-            win = 10000000
+            win1 = 10000000
         elif y == 5:
-            win = 8584
+            win1 = 8584
         elif y == 4:
-            win = 2384
+            win1 = 2384
         elif y == 3:
-            win = 100.50
+            win1 = 100.50
         elif y == 2:
-            win = 20
+            win1 = 20
         elif y < 2:
-            win = 0
-        messagebox.showinfo("Status set 2", "Set had: " + str(y))
-        messagebox.showinfo("Lotto set 2", "Numbers are: " + str(lotto_nums))
-        messagebox.showinfo("Winnings set 2", "You have won R" + str(win))
+            win1 = 0
+        messagebox.showinfo('Status set 2', 'Set had: ' + str(y) + ' correct')
+        messagebox.showinfo('Winnings set 2', 'You have won R' + str(win1))
+
+        youwon = {'Numbers correct': str(y),
+                  'Amount won': str(win1)}
+
+        with open("details.txt", 'a') as f:
+            for key, value in youwon.items():
+                f.write('%s:%s\n' % (key, value))
 
         for x in range(0, 6):
             if self.list3[x] == lotto_nums[x]:
                 y += 1
         if y == 6:
-            win = 10000000
+            win2 = 10000000
         elif y == 5:
-            win = 8584
+            win2 = 8584
         elif y == 4:
-            win = 2384
+            win2 = 2384
         elif y == 3:
-            win = 100.50
+            win2 = 100.50
         elif y == 2:
-            win = 20
+            win2 = 20
         elif y < 2:
-            win = 0
-        messagebox.showinfo("Status set 3", "Set had: " + str(y))
-        messagebox.showinfo("Lotto set 3", "Numbers are: " + str(lotto_nums))
-        messagebox.showinfo("Winnings set 3", "You have won R" + str(win))
+            win2 = 0
+        messagebox.showinfo('Status set 3', 'Set had: ' + str(y) + ' correct')
+        messagebox.showinfo('Winnings set 3', 'You have won R' + str(win2))
+
+        t = win + win1 + win2
+
+        youwon = {'Numbers correct': str(y),
+                  'Amount won': str(win2),
+                  'total amount won': str(t)}
+
+        with open("details.txt", 'a') as f:
+            for key, value in youwon.items():
+                f.write('%s:%s\n' % (key, value))
+
+        if t == 0:
+            msg = messagebox.askquestion('Retry', 'Try again??')
+            if msg == 'yes':
+                self.list1var.set('')
+                self.list2var.set('')
+                self.list3var.set('')
+                self.results.set('')
+                self.list1 = []
+                self.list2 = []
+                self.list3 = []
+            elif msg == 'no':
+                root.destroy()
+        elif t > 0:
+            self.claim_prize.config(state=NORMAL)
+
+    def claim(self):
+        root.destroy()
+        import claim
 
     def kill(self):
         root.destroy()
